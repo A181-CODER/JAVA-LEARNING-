@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عالم Java ☕</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        code, .code { font-family: 'Fira Code', monospace; }
+        
+        .java-gradient {
+            background: linear-gradient(135deg, #f89820 0%, #5382a1 50%, #f89820 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .coffee-steam {
+            position: absolute;
+            width: 8px;
+            height: 60px;
+            background: linear-gradient(to top, rgba(255,255,255,0.8), transparent);
+            border-radius: 50%;
+            animation: steam 2s ease-in-out infinite;
+        }
+        
+        @keyframes steam {
+            0%, 100% { transform: translateY(0) scaleX(1); opacity: 0.8; }
+            50% { transform: translateY(-20px) scaleX(1.5); opacity: 0.4; }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .typing-effect {
+            overflow: hidden;
+            border-left: 3px solid #f89820;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #f89820; }
+        }
+        
+        .code-editor {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-header {
+            background: #323232;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca40; }
+        
+        .syntax-keyword { color: #cc7832; }
+        .syntax-type { color: #ffc66d; }
+        .syntax-string { color: #6a8759; }
+        .syntax-comment { color: #808080; }
+        .syntax-method { color: #ffc66d; }
+        .syntax-number { color: #6897bb; }
+        
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            animation: particleFall linear forwards;
+        }
+        
+        @keyframes particleFall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(248, 152, 32, 0.5), 0 0 40px rgba(248, 152, 32, 0.3);
+        }
+        
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px -15px rgba(248, 152, 32, 0.4);
+        }
+        
+        .run-button {
+            background: linear-gradient(135deg, #f89820, #e8821c);
+            transition: all 0.3s ease;
+        }
+        
+        .run-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(248, 152, 32, 0.5);
+        }
+        
+        .console-output {
+            background: #0d0d0d;
+            border-top: 2px solid #f89820;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #f89820, #5382a1, #f89820);
+            background-size: 200% 100%;
+            animation: progressShine 2s linear infinite;
+        }
+        
+        @keyframes progressShine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen overflow-x-hidden">
+    <!-- Matrix Background -->
+    <canvas id="matrixCanvas" class="matrix-bg"></canvas>
+    
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 java-gradient opacity-20"></div>
+        
+        <!-- Coffee Cup Icon -->
+        <div class="absolute top-20 left-20 floating hidden lg:block">
+            <div class="relative">
+                <svg width="100" height="120" viewBox="0 0 100 120" class="drop-shadow-2xl">
+                    <path d="M20 40 L20 100 Q20 110 30 110 L60 110 Q70 110 70 100 L70 40 Z" fill="#5382a1"/>
+                    <path d="M70 50 Q90 50 90 70 Q90 90 70 90" stroke="#5382a1" stroke-width="8" fill="none"/>
+                    <ellipse cx="45" cy="40" rx="27" ry="8" fill="#3d6a8a"/>
+                </svg>
+                <div class="coffee-steam" style="top: 10px; left: 35px;"></div>
+                <div class="coffee-steam" style="top: 5px; left: 45px; animation-delay: 0.5s;"></div>
+                <div class="coffee-steam" style="top: 15px; left: 55px; animation-delay: 1s;"></div>
+            </div>
+        </div>
+        
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <div class="mb-8">
+                <span class="text-6xl">☕</span>
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 glow-text">
+                <span class="text-[#f89820]">J</span><span class="text-[#5382a1]">A</span><span class="text-[#f89820]">V</span><span class="text-[#5382a1]">A</span>
+            </h1>
+            <p class="text-2xl md:text-3xl text-gray-300 mb-4">اكتب مرة واحدة، شغّل في أي مكان</p>
+            <p class="text-lg text-gray-400 mb-12 code">"Write Once, Run Anywhere"</p>
+            
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#editor" class="run-button px-8 py-4 rounded-xl text-xl font-bold text-white">
+                    🚀 جرّب الآن
+                </a>
+                <a href="#features" class="px-8 py-4 rounded-xl text-xl font-bold border-2 border-[#5382a1] hover:bg-[#5382a1] transition-all">
+                    📚 تعلّم المزيد
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-8 h-8 text-[#f89820]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </header>
+    
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-800/50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16">
+                لماذا <span class="text-[#f89820]">Java</span>؟ ☕
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="card-hover bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-2xl border border-gray-700">
+                    <div class="text-5xl mb-4">🌍</div>
+                    <h3 class="text-2xl font-bold text-[#f89820] mb-3">متعددة المنصات</h3>
+                    <p class="text-gray-400">كود واحد يعمل على Windows, Mac, Linux وأكثر!</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-2xl border border-gray-700">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h3 class="text-2xl font-bold text-[#5382a1] mb-3">آمنة وموثوقة</h3>
+                    <p class="text-gray-400">نظام أنواع قوي وإدارة ذاكرة تلقائية</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-2xl border border-gray-700">
+                    <div class="text-5xl mb-4">⚡</div>
+                    <h3 class="text-2xl font-bold text-[#f89820] mb-3">أداء عالي</h3>
+                    <p class="text-gray-400">JVM محسّنة للسرعة والكفاءة</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-2xl border border-gray-700">
+                    <div class="text-5xl mb-4">👥</div>
+                    <h3 class="text-2xl font-bold text-[#5382a1] mb-3">مجتمع ضخم</h3>
+                    <p class="text-gray-400">ملايين المطورين ومكتبات لا حصر لها</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Code Editor Section -->
+    <section id="editor" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-4">
+                🖥️ محاكي <span class="text-[#f89820]">Java</span>
+            </h2>
+            <p class="text-center text-gray-400 mb-12">اختر مثال أو اكتب كودك الخاص!</p>
+            
+            <!-- Example Buttons -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button onclick="loadExample('hello')" class="px-4 py-2 bg-gray-700 hover:bg-[#f89820] rounded-lg transition-all">
+                    👋 Hello World
+                </button>
+                <button onclick="loadExample('loop')" class="px-4 py-2 bg-gray-700 hover:bg-[#f89820] rounded-lg transition-all">
+                    🔄 الحلقات
+                </button>
+                <button onclick="loadExample('oop')" class="px-4 py-2 bg-gray-700 hover:bg-[#f89820] rounded-lg transition-all">
+                    🎯 OOP
+                </button>
+                <button onclick="loadExample('array')" class="px-4 py-2 bg-gray-700 hover:bg-[#f89820] rounded-lg transition-all">
+                    📦 المصفوفات
+                </button>
+                <button onclick="loadExample('method')" class="px-4 py-2 bg-gray-700 hover:bg-[#f89820] rounded-lg transition-all">
+                    ⚙️ الدوال
+                </button>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="code-editor">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="text-gray-400 text-sm mr-4 code">Main.java</span>
+                    </div>
+                    <div class="p-6">
+                        <textarea id="codeInput" class="w-full h-64 bg-transparent text-gray-100 code text-sm resize-none focus:outline-none" dir="ltr" spellcheck="false"></textarea>
+                    </div>
+                    <div class="px-6 pb-4 flex justify-between items-center">
+                        <button onclick="runCode()" class="run-button px-6 py-3 rounded-lg font-bold flex items-center gap-2">
+                            <span>▶</span> تشغيل الكود
+                        </button>
+                        <button onclick="clearOutput()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all">
+                            🗑️ مسح
+                        </button>
+                    </div>
+                    <div class="console-output p-4">
+                        <div class="flex items-center gap-2 mb-2 text-gray-400">
+                            <span>📟</span>
+                            <span class="code text-sm">Console Output:</span>
+                        </div>
+                        <div id="output" class="code text-green-400 text-sm min-h-[60px] whitespace-pre-wrap" dir="ltr"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Java Concepts Section -->
+    <section class="py-20 bg-gray-800/50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16">
+                📖 مفاهيم <span class="text-[#5382a1]">أساسية</span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Concept Cards -->
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#f89820] to-[#5382a1]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">📦</span> الكلاسات والكائنات
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">class</span> <span class="syntax-type">Car</span> {<br>
+                            &nbsp;&nbsp;<span class="syntax-type">String</span> color;<br>
+                            &nbsp;&nbsp;<span class="syntax-keyword">void</span> <span class="syntax-method">drive</span>() {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="syntax-string">"Driving!"</span>);<br>
+                            &nbsp;&nbsp;}<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#5382a1] to-[#f89820]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">🧬</span> الوراثة
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">class</span> <span class="syntax-type">Animal</span> {<br>
+                            &nbsp;&nbsp;<span class="syntax-keyword">void</span> <span class="syntax-method">eat</span>() { }<br>
+                            }<br><br>
+                            <span class="syntax-keyword">class</span> <span class="syntax-type">Dog</span> <span class="syntax-keyword">extends</span> <span class="syntax-type">Animal</span> {<br>
+                            &nbsp;&nbsp;<span class="syntax-keyword">void</span> <span class="syntax-method">bark</span>() { }<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#f89820] to-[#5382a1]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">🔄</span> الحلقات
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">for</span> (<span class="syntax-keyword">int</span> i = <span class="syntax-number">0</span>; i < <span class="syntax-number">5</span>; i++) {<br>
+                            &nbsp;&nbsp;System.out.println(i);<br>
+                            }<br><br>
+                            <span class="syntax-keyword">while</span> (condition) {<br>
+                            &nbsp;&nbsp;<span class="syntax-comment">// كود</span><br>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#5382a1] to-[#f89820]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">📝</span> المتغيرات
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">int</span> age = <span class="syntax-number">25</span>;<br>
+                            <span class="syntax-type">String</span> name = <span class="syntax-string">"أحمد"</span>;<br>
+                            <span class="syntax-keyword">double</span> price = <span class="syntax-number">99.99</span>;<br>
+                            <span class="syntax-keyword">boolean</span> active = <span class="syntax-keyword">true</span>;<br>
+                            <span class="syntax-keyword">char</span> grade = <span class="syntax-string">'A'</span>;
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#f89820] to-[#5382a1]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">⚙️</span> الدوال
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">public int</span> <span class="syntax-method">add</span>(<span class="syntax-keyword">int</span> a, <span class="syntax-keyword">int</span> b) {<br>
+                            &nbsp;&nbsp;<span class="syntax-keyword">return</span> a + b;<br>
+                            }<br><br>
+                            <span class="syntax-comment">// الاستخدام</span><br>
+                            <span class="syntax-keyword">int</span> sum = add(<span class="syntax-number">5</span>, <span class="syntax-number">3</span>);
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-hover bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                    <div class="h-2 bg-gradient-to-r from-[#5382a1] to-[#f89820]"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="text-2xl">🎯</span> الشروط
+                        </h3>
+                        <div class="bg-gray-800 rounded-lg p-4 code text-sm" dir="ltr">
+                            <span class="syntax-keyword">if</span> (score >= <span class="syntax-number">90</span>) {<br>
+                            &nbsp;&nbsp;System.out.println(<span class="syntax-string">"ممتاز!"</span>);<br>
+                            } <span class="syntax-keyword">else if</span> (score >= <span class="syntax-number">60</span>) {<br>
+                            &nbsp;&nbsp;System.out.println(<span class="syntax-string">"جيد"</span>);<br>
+                            } <span class="syntax-keyword">else</span> {<br>
+                            &nbsp;&nbsp;System.out.println(<span class="syntax-string">"حاول مجدداً"</span>);<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-5xl font-black text-[#f89820] mb-2" id="stat1">0</div>
+                    <div class="text-gray-400">سنة من التطور</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-5xl font-black text-[#5382a1] mb-2" id="stat2">0</div>
+                    <div class="text-gray-400">مليون مطور</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-5xl font-black text-[#f89820] mb-2" id="stat3">0</div>
+                    <div class="text-gray-400">مليار جهاز يستخدم Java</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-5xl font-black text-[#5382a1] mb-2">#<span id="stat4">0</span></div>
+                    <div class="text-gray-400">في لغات البرمجة</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-10 bg-gray-900 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="text-4xl mb-4">☕</div>
+            <p class="text-gray-400 mb-2">صُنع بـ ❤️ لمحبي Java</p>
+            <p class="text-gray-500 code text-sm">System.out.println("Happy Coding!");</p>
+        </div>
+    </footer>
+
+    <script>
+        // Code Examples
+        const examples = {
+            hello: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("مرحباً بالعالم! 🌍");
+        System.out.println("Hello, World!");
+        System.out.println("أنا أتعلم Java ☕");
+    }
+}`,
+            loop: `public class Main {
+    public static void main(String[] args) {
+        // حلقة for
+        System.out.println("🔢 العد من 1 إلى 5:");
+        for (int i = 1; i <= 5; i++) {
+            System.out.println("العدد: " + i);
+        }
+        
+        System.out.println("\\n⭐ طباعة النجوم:");
+        for (int i = 1; i <= 5; i++) {
+            String stars = "";
+            for (int j = 0; j < i; j++) {
+                stars += "⭐";
+            }
+            System.out.println(stars);
+        }
+    }
+}`,
+            oop: `public class Main {
+    public static void main(String[] args) {
+        // إنشاء كائنات
+        Car myCar = new Car("Tesla", "أحمر");
+        Car yourCar = new Car("BMW", "أسود");
+        
+        myCar.displayInfo();
+        myCar.drive();
+        
+        yourCar.displayInfo();
+        yourCar.drive();
+    }
+}
+
+class Car {
+    String brand;
+    String color;
+    
+    Car(String brand, String color) {
+        this.brand = brand;
+        this.color = color;
+    }
+    
+    void displayInfo() {
+        System.out.println("🚗 سيارة: " + brand + " - اللون: " + color);
+    }
+    
+    void drive() {
+        System.out.println("   ➡️ السيارة تتحرك! Vroom! 🏎️\\n");
+    }
+}`,
+            array: `public class Main {
+    public static void main(String[] args) {
+        // مصفوفة الأرقام
+        int[] numbers = {10, 20, 30, 40, 50};
+        
+        System.out.println("📊 الأرقام:");
+        int sum = 0;
+        for (int num : numbers) {
+            System.out.println("  • " + num);
+            sum += num;
+        }
+        System.out.println("المجموع: " + sum);
+        System.out.println("المتوسط: " + (sum / numbers.length));
+        
+        // مصفوفة النصوص
+        String[] fruits = {"🍎 تفاح", "🍌 موز", "🍊 برتقال"};
+        
+        System.out.println("\\n🍇 الفواكه:");
+        for (String fruit : fruits) {
+            System.out.println("  " + fruit);
+        }
+    }
+}`,
+            method: `public class Main {
+    public static void main(String[] args) {
+        // استدعاء الدوال
+        greet("أحمد");
+        greet("سارة");
+        
+        int result = add(15, 25);
+        System.out.println("\\n➕ 15 + 25 = " + result);
+        
+        System.out.println("\\n📐 مساحة المستطيل:");
+        double area = calculateArea(5.5, 3.2);
+        System.out.println("   5.5 × 3.2 = " + area);
+        
+        System.out.println("\\n🔢 هل 7 عدد زوجي؟ " + isEven(7));
+        System.out.println("🔢 هل 8 عدد زوجي؟ " + isEven(8));
+    }
+    
+    static void greet(String name) {
+        System.out.println("👋 مرحباً " + name + "!");
+    }
+    
+    static int add(int a, int b) {
+        return a + b;
+    }
+    
+    static double calculateArea(double width, double height) {
+        return width * height;
+    }
+    
+    static boolean isEven(int num) {
+        return num % 2 == 0;
+    }
+}`
+        };
+        
+        // Load example
+        function loadExample(name) {
+            document.getElementById('codeInput').value = examples[name];
+            clearOutput();
+        }
+        
+        // Initialize with hello world
+        loadExample('hello');
+        
+        // Simple Java interpreter simulation
+        function runCode() {
+            const code = document.getElementById('codeInput').value;
+            const output = document.getElementById('output');
+            
+            output.innerHTML = '<span class="text-yellow-400">⏳ جاري التحويل والتشغيل...</span>\n';
+            
+            setTimeout(() => {
+                try {
+                    let result = simulateJava(code);
+                    output.innerHTML = '<span class="text-blue-400">✅ تم التشغيل بنجاح!</span>\n\n' + result;
+                    createParticles();
+                } catch (e) {
+                    output.innerHTML = '<span class="text-red-400">❌ خطأ: ' + e.message + '</span>';
+                }
+            }, 500);
+        }
+        
+        function simulateJava(code) {
+            let output = [];
+            
+            // Extract all println statements
+            const printRegex = /System\.out\.println\s*\((.*?)\)\s*;/g;
+            let match;
+            
+            // Simple variable storage
+            let variables = {};
+            
+            // Find variable declarations
+            const varRegex = /(int|String|double|boolean)\s+(\w+)\s*=\s*([^;]+);/g;
+            while ((match = varRegex.exec(code)) !== null) {
+                let value = match[3].trim();
+                if (match[1] === 'int') {
+                    variables[match[2]] = parseInt(eval(value.replace(/\w+/g, (m) => variables[m] || m)));
+                } else if (match[1] === 'double') {
+                    variables[match[2]] = parseFloat(eval(value.replace(/\w+/g, (m) => variables[m] || m)));
+                } else {
+                    variables[match[2]] = value.replace(/"/g, '');
+                }
+            }
+            
+            // Process for loops
+            const forLoopRegex = /for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\w+\s*([<>=!]+)\s*(\d+)\s*;\s*\w+(\+\+|--)\s*\)\s*\{([^}]*)\}/gs;
+            
+            while ((match = forLoopRegex.exec(code)) !== null) {
+                let varName = match[1];
+                let start = parseInt(match[2]);
+                let operator = match[3];
+                let end = parseInt(match[4]);
+                let increment = match[5];
+                let loopBody = match[6];
+                
+                let condition = (i) => {
+                    if (operator === '<') return i < end;
+                    if (operator === '<=') return i <= end;
+                    if (operator === '>') return i > end;
+                    if (operator === '>=') return i >= end;
+                    return false;
+                };
+                
+                for (let i = start; condition(i); increment === '++' ? i++ : i--) {
+                    let innerPrintRegex = /System\.out\.println\s*\((.*?)\)\s*;/g;
+                    let innerMatch;
+                    while ((innerMatch = innerPrintRegex.exec(loopBody)) !== null) {
+                        let printContent = innerMatch[1];
+                        printContent = printContent.replace(new RegExp('\\b' + varName + '\\b', 'g'), i);
+                        output.push(evaluatePrint(printContent, variables));
+                    }
+                }
+            }
+            
+            // Process regular println outside loops
+            const simpleCode = code.replace(forLoopRegex, '');
+            while ((match = printRegex.exec(simpleCode)) !== null) {
+                output.push(evaluatePrint(match[1], variables));
+            }
+            
+            return output.join('\n') || '(لا يوجد مخرجات)';
+        }
+        
+        function evaluatePrint(content, variables) {
+            // Handle string concatenation
+            content = content.replace(/"/g, '');
+            content = content.replace(/\s*\+\s*/g, '');
+            
+            // Replace variables
+            for (let [key, value] of Object.entries(variables)) {
+                content = content.replace(new RegExp('\\b' + key + '\\b', 'g'), value);
+            }
+            
+            // Handle escape sequences
+            content = content.replace(/\\n/g, '\n');
+            
+            return content;
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '<span class="text-gray-500">// المخرجات ستظهر هنا...</span>';
+        }
+        
+        // Create celebration particles
+        function createParticles() {
+            const emojis = ['☕', '⭐', '🎉', '💻', '🚀'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.left = Math.random() * 100 + 'vw';
+                    particle.style.top = '-20px';
+                    particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                    particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 4000);
+                }, i * 100);
+            }
+        }
+        
+        // Animate stats
+        function animateStats() {
+            const stats = [
+                { id: 'stat1', target: 29 },
+                { id: 'stat2', target: 12 },
+                { id: 'stat3', target: 15 },
+                { id: 'stat4', target: 3 }
+            ];
+            
+            stats.forEach(stat => {
+                let current = 0;
+                const increment = stat.target / 50;
+                const interval = setInterval(() => {
+                    current += increment;
+                    if (current >= stat.target) {
+                        current = stat.target;
+                        clearInterval(interval);
+                    }
+                    document.getElementById(stat.id).textContent = Math.floor(current);
+                }, 30);
+            });
+        }
+        
+        // Intersection Observer for stats animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(document.getElementById('stat1'));
+        
+        // Matrix background effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = 'JAVA{}();public class void int String 01'.split('');
+        const columns = canvas.width / 20;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#f89820';
+            ctx.font = '15px Fira Code';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * 20, drops[i] * 20);
+                
+                if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
